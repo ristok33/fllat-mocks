@@ -12,6 +12,7 @@ Static HTML mockups for the Fllat no-deposit booking flow.
 | `step4-payment-plan.html` | Payment plan summary |
 | `step5-review.html` | Review booking details |
 | `step6-reserve.html` | Reservation confirmation |
+| `step7-deposit-payment.html` | Onboarding — deposit vs no-deposit payment |
 
 ## Usage
 

@@ -106,6 +106,7 @@ document.addEventListener('click', function(e) {
   if (!btn) return;
   var text = btn.textContent.trim();
     if (text === '← Back') { window.location.href = 'step5-review.html'; return; }
+    if (text === 'Reserve →' || text === 'Continue' || text === 'Continue →' || text === 'Proceed to Payment') { window.location.href = 'step7-deposit-payment.html'; return; }
 
   // Close/Dismiss button -> back to detail page
   if (btn) {

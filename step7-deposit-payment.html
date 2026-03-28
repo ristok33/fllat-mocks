@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deposit Payment - Fllat</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fff; color: #1f1f1f; }
+
+    /* Header */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px; border-bottom: 1px solid #eee;
+    }
+    .logo { font-size: 24px; font-weight: 700; color: #1f1f1f; text-decoration: none; }
+    .logo span { color: #DA4F4A; }
+    .header-actions { display: flex; gap: 12px; }
+    .btn-outline {
+      padding: 8px 20px; border-radius: 20px; border: 1px solid #ddd;
+      background: white; font-size: 14px; cursor: pointer; color: #1f1f1f;
+    }
+    .btn-outline:hover { background: #f9f9f9; }
+    .btn-exit {
+      padding: 8px 20px; border-radius: 20px; border: 1px solid #DA4F4A;
+      background: white; font-size: 14px; cursor: pointer; color: #DA4F4A;
+    }
+    .btn-exit:hover { background: #fef2f0; }
+
+    /* Layout */
+    .layout { display: flex; min-height: calc(100vh - 65px); }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px; padding: 32px 24px; border-right: 1px solid #eee;
+      display: flex; flex-direction: column;
+    }
+    .sidebar-icon {
+      width: 56px; height: 56px; background: #fef2f0; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 16px;
+    }
+    .sidebar-icon svg { color: #DA4F4A; }
+    .sidebar h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .sidebar .step-count { font-size: 13px; color: #888; margin-bottom: 32px; }
+
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+    .step-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; font-size: 14px; color: #888;
+      border-left: 3px solid transparent; position: relative;
+    }
+    .step-item.completed { color: #1f1f1f; }
+    .step-item.completed .step-icon { background: #22c55e; color: white; }
+    .step-item.active {
+      color: #1f1f1f; font-weight: 500;
+      background: #fef2f0; border-left-color: #DA4F4A; border-radius: 0 8px 8px 0;
+    }
+    .step-item.active .step-icon { border: 2px solid #DA4F4A; background: white; }
+    .step-item.locked .step-icon { background: #f3f4f6; color: #bbb; }
+    .step-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; flex-shrink: 0;
+    }
+
+    .booking-id-section {
+      margin-top: auto; padding-top: 24px; border-top: 1px solid #eee;
+    }
+    .booking-id-label { font-size: 12px; color: #888; margin-bottom: 8px; }
+    .booking-id-box {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #f9fafb; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-size: 13px; font-weight: 500;
+    }
+    .copy-btn { background: none; border: none; cursor: pointer; color: #888; padding: 4px; }
+    .copy-btn:hover { color: #1f1f1f; }
+
+    /* Main content */
+    .main { flex: 1; padding: 48px 64px; max-width: 800px; }
+    .main h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+    .main .subtitle { font-size: 15px; color: #666; margin-bottom: 32px; }
+
+    /* Payment card */
+    .payment-card {
+      border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;
+    }
+    .payment-header {
+      padding: 16px 24px; background: #f9fafb; border-bottom: 1px solid #e5e7eb;
+      font-size: 15px; font-weight: 600;
+    }
+    .payment-body { padding: 24px; }
+
+    /* Deposit toggle */
+    .deposit-toggle {
+      display: flex; gap: 12px; margin-bottom: 24px;
+    }
+    .toggle-option {
+      flex: 1; padding: 16px; border: 2px solid #e5e7eb; border-radius: 12px;
+      cursor: pointer; text-align: center; transition: all 0.2s;
+    }
+    .toggle-option:hover { border-color: #ccc; }
+    .toggle-option.active-deposit { border-color: #DA4F4A; background: #fef2f0; }
+    .toggle-option.active-nodeposit { border-color: #22c55e; background: #f0fdf4; }
+    .toggle-option .toggle-amount { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .toggle-option .toggle-label { font-size: 12px; color: #666; }
+    .toggle-option.active-deposit .toggle-amount { color: #DA4F4A; }
+    .toggle-option.active-deposit .toggle-label { color: #DA4F4A; }
+    .toggle-option.active-nodeposit .toggle-amount { color: #16a34a; }
+    .toggle-option.active-nodeposit .toggle-label { color: #16a34a; }
+
+    .payment-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 0; border-bottom: 1px solid #f3f4f6;
+    }
+    .payment-row:last-child { border-bottom: none; }
+    .payment-row .label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 14px; color: #555;
+    }
+    .payment-row .label .info-icon {
+      width: 18px; height: 18px; border-radius: 50%; border: 1px solid #ddd;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 11px; color: #999; cursor: pointer;
+    }
+    .payment-row .amount { font-size: 14px; color: #1f1f1f; }
+    .payment-row.total { border-top: 1px solid #e5e7eb; padding-top: 16px; }
+    .payment-row.total .label { font-size: 15px; font-weight: 600; color: #1f1f1f; }
+    .payment-row.total .amount { font-size: 15px; font-weight: 700; color: #1f1f1f; }
+
+    /* No-deposit info */
+    .nodeposit-info {
+      display: none; margin-top: 8px; padding: 12px 16px;
+      background: #f0fdf4; border-radius: 8px; font-size: 12px;
+      color: #555; line-height: 1.6;
+    }
+    .nodeposit-info.visible { display: block; }
+    .nodeposit-info strong { color: #16a34a; }
+
+    /* Stripe button */
+    .stripe-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 16px; margin-top: 24px;
+      background: #DA4F4A; color: white; border: none; border-radius: 28px;
+      font-size: 16px; font-weight: 500; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .stripe-btn:hover { background: #c94440; }
+    .stripe-badge {
+      background: rgba(255,255,255,0.2); padding: 3px 8px;
+      border-radius: 4px; font-size: 12px; font-weight: 600;
+    }
+    .casapay-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 16px; margin-top: 24px;
+      background: #16a34a; color: white; border: none; border-radius: 28px;
+      font-size: 16px; font-weight: 500; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .casapay-btn:hover { background: #15803d; }
+    .casapay-badge {
+      background: rgba(255,255,255,0.2); padding: 3px 8px;
+      border-radius: 4px; font-size: 12px; font-weight: 600;
+    }
+
+    /* Timer */
+    .timer-section { text-align: center; margin-top: 32px; }
+    .timer {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 12px 20px; border: 1px solid #e5e7eb; border-radius: 10px;
+      font-size: 14px; margin-bottom: 8px;
+    }
+    .timer .num { font-size: 20px; font-weight: 600; color: #1f1f1f; min-width: 28px; text-align: center; }
+    .timer .unit { font-size: 11px; color: #999; margin-right: 8px; }
+    .timer .sep { font-size: 18px; color: #ccc; margin: 0 2px; }
+    .timer-text { font-size: 13px; color: #999; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <a href="step1-rooms.html" class="logo">fllat<span>.</span></a>
+    <div class="header-actions">
+      <button class="btn-outline">Get Help</button>
+      <button class="btn-exit">Save &amp; exit</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#DA4F4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M8 12h8M8 8h8"/>
+        </svg>
+      </div>
+      <h3>Onboarding process</h3>
+      <div class="step-count">Step 3 of 5</div>
+
+      <ul class="step-list">
+        <li class="step-item completed">
+          <span class="step-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+          </span>
+          Application Fee
+        </li>
+        <li class="step-item completed">
+          <span class="step-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+          </span>
+          Document Verification
+        </li>
+        <li class="step-item active">
+          <span class="step-icon">
+            <svg width="8" height="8"><circle cx="4" cy="4" r="4" fill="#DA4F4A"/></svg>
+          </span>
+          Deposit Payment
+        </li>
+        <li class="step-item locked">
+          <span class="step-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </span>
+          Lease Agreement
+        </li>
+        <li class="step-item locked">
+          <span class="step-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </span>
+          1st Rent Payment
+        </li>
+      </ul>
+
+      <div class="booking-id-section">
+        <div class="booking-id-label">Booking ID:</div>
+        <div class="booking-id-box">
+          <span>FLKAMA25040716</span>
+          <button class="copy-btn" title="Copy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main">
+      <h1>Deposit payment</h1>
+      <p class="subtitle">Confirm your booking by paying the deposit</p>
+
+      <div class="payment-card">
+        <div class="payment-header">Payment Details</div>
+        <div class="payment-body">
+
+          <!-- Deposit vs No-deposit toggle -->
+          <div class="deposit-toggle">
+            <div class="toggle-option active-deposit" data-mode="deposit" onclick="selectMode('deposit')">
+              <div class="toggle-amount">£1,180</div>
+              <div class="toggle-label">Full deposit</div>
+            </div>
+            <div class="toggle-option" data-mode="nodeposit" onclick="selectMode('nodeposit')">
+              <div class="toggle-amount">£23.60/mo</div>
+              <div class="toggle-label">No-deposit</div>
+            </div>
+          </div>
+
+          <!-- Deposit view -->
+          <div id="deposit-view">
+            <div class="payment-row">
+              <span class="label">Deposit <span class="info-icon">i</span></span>
+              <span class="amount">£1,180</span>
+            </div>
+            <div class="payment-row total">
+              <span class="label">To pay</span>
+              <span class="amount">£1,180</span>
+            </div>
+          </div>
+
+          <!-- No-deposit view -->
+          <div id="nodeposit-view" style="display:none;">
+            <div class="payment-row">
+              <span class="label">No-deposit fee <span class="info-icon">i</span></span>
+              <span class="amount">£23.60/mo</span>
+            </div>
+            <div class="payment-row">
+              <span class="label">First month fee</span>
+              <span class="amount">£23.60</span>
+            </div>
+            <div class="payment-row total">
+              <span class="label">To pay today</span>
+              <span class="amount">£23.60</span>
+            </div>
+            <div class="nodeposit-info visible">
+              <strong>How no-deposit works:</strong> Instead of a full deposit, a small monthly fee is added to your rent. No large upfront payment required. The fee is non-refundable and based on room size and stay length.
+            </div>
+          </div>
+
+          <button id="btn-stripe" class="stripe-btn" onclick="alert('Payment successful! Redirecting...');window.location.href='step1-rooms.html';">
+            <span class="stripe-badge">stripe</span>
+            Pay with stripe
+          </button>
+          <button id="btn-casapay" class="casapay-btn" style="display:none;" onclick="alert('Payment successful! Redirecting...');window.location.href='step1-rooms.html';">
+            <span class="casapay-badge">CasaPay</span>
+            Pay with CasaPay
+          </button>
+        </div>
+      </div>
+
+      <div class="timer-section">
+        <div class="timer">
+          <span class="num">48</span><span class="unit">Hrs</span>
+          <span class="sep">:</span>
+          <span class="num">15</span><span class="unit">Min</span>
+          <span class="sep">:</span>
+          <span class="num">24</span><span class="unit">Sec</span>
+        </div>
+        <div class="timer-text">Pay before your reservation expires</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function selectMode(mode) {
+      var opts = document.querySelectorAll('.toggle-option');
+      opts.forEach(function(o) {
+        o.classList.remove('active-deposit', 'active-nodeposit');
+      });
+
+      var selected = document.querySelector('[data-mode="' + mode + '"]');
+      selected.classList.add(mode === 'deposit' ? 'active-deposit' : 'active-nodeposit');
+
+      document.getElementById('deposit-view').style.display = mode === 'deposit' ? 'block' : 'none';
+      document.getElementById('nodeposit-view').style.display = mode === 'nodeposit' ? 'block' : 'none';
+      document.getElementById('btn-stripe').style.display = mode === 'deposit' ? 'flex' : 'none';
+      document.getElementById('btn-casapay').style.display = mode === 'nodeposit' ? 'flex' : 'none';
+    }
+  </script>
+
+</body>
+</html>
